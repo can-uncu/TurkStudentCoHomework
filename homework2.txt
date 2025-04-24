@@ -1,0 +1,113 @@
+-- 1. Users table
+CREATE TABLE Users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    registration_date TIMESTAMP
+);
+
+-- 2. Courses table
+CREATE TABLE Courses (
+    course_id SERIAL PRIMARY KEY,
+    title VARCHAR(200),
+    description TEXT,
+    start_date DATE,
+    end_date DATE,
+    instructor VARCHAR(100)
+);
+
+-- 3. Categories table
+CREATE TABLE Categories (
+    category_id SERIAL PRIMARY KEY,
+    category_name VARCHAR(100)
+);
+
+-- 4. Course-Category relation (junction table)
+CREATE TABLE Course_Category (
+    id SERIAL PRIMARY KEY,
+    course_id INTEGER REFERENCES Courses(course_id),
+    category_id INTEGER REFERENCES Categories(category_id)
+);
+
+-- 5. Enrollments table (between users and courses)
+CREATE TABLE Enrollments (
+    enrollment_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES Users(user_id),
+    course_id INTEGER REFERENCES Courses(course_id),
+    enrollment_date TIMESTAMP
+);
+
+-- 6. Certificates table
+CREATE TABLE Certificates (
+    certificate_id SERIAL PRIMARY KEY,
+    certificate_code VARCHAR(100) UNIQUE,
+    issue_date DATE
+);
+
+-- 7. Certificate Assignments (between users and certificates)
+CREATE TABLE Certificate_Assignments (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES Users(user_id),
+    certificate_id INTEGER REFERENCES Certificates(certificate_id),
+    received_date DATE
+);
+
+-- 8. Blog Posts
+CREATE TABLE Blog_Posts (
+    post_id SERIAL PRIMARY KEY,
+    title VARCHAR(255),
+    content TEXT,
+    publish_date TIMESTAMP,
+    author_id INTEGER REFERENCES Users(user_id)
+);
+
+-- Insert into Users
+INSERT INTO Users (username, email, password, first_name, last_name, registration_date)
+VALUES 
+('ayse123', 'ayse@example.com', '12345', 'Ayse', 'Yilmaz', CURRENT_TIMESTAMP),
+('mehmet89', 'mehmet@example.com', 'abcde', 'Mehmet', 'Demir', CURRENT_TIMESTAMP);
+
+-- Insert into Courses
+INSERT INTO Courses (title, description, start_date, end_date, instructor)
+VALUES 
+('Introduction to Data Science', 'Basic data science concepts.', '2025-04-01', '2025-05-01', 'Dr. Zeynep Kara'),
+('Programming with Python', 'Basic programming training with Python.', '2025-04-10', '2025-05-20', 'Ali Veli');
+
+-- Insert into Categories
+INSERT INTO Categories (category_name)
+VALUES 
+('Data Science'),
+('Programming');
+
+-- Insert into Course_Category
+INSERT INTO Course_Category (course_id, category_id)
+VALUES 
+(1, 1), -- Intro to Data Science → Data Science
+(2, 2); -- Python Course → Programming
+
+-- Insert into Enrollments
+INSERT INTO Enrollments (user_id, course_id, enrollment_date)
+VALUES 
+(1, 1, CURRENT_TIMESTAMP), -- Ayse → Intro to Data Science
+(2, 2, CURRENT_TIMESTAMP); -- Mehmet → Python Course
+
+-- Insert into Certificates
+INSERT INTO Certificates (certificate_code, issue_date)
+VALUES 
+('CERT-2025-001', '2025-05-02'),
+('CERT-2025-002', '2025-05-21');
+
+-- Insert into Certificate_Assignments
+INSERT INTO Certificate_Assignments (user_id, certificate_id, received_date)
+VALUES 
+(1, 1, '2025-05-03'),
+(2, 2, '2025-05-22');
+
+-- Insert into Blog_Posts
+INSERT INTO Blog_Posts (title, content, publish_date, author_id)
+VALUES 
+('Met Data Science Today', 'Today I joined my first data science course!', CURRENT_TIMESTAMP, 1),
+('Python is Awesome!', 'Learning programming with Python is so enjoyable.', CURRENT_TIMESTAMP, 2);
